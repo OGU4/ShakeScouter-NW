@@ -1,0 +1,1 @@
+WAVE_DEBUG = False

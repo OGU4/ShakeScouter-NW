@@ -4,12 +4,19 @@
 import cv2 as cv
 import numpy as np
 
-from functools import reduce
 from math import ceil, floor
 from numpy.typing import NDArray
+from pathlib import Path
+from time import strftime
+from typing import Optional
 
+from constants import screen
+from utils import debug_flags
+from utils.debug_io import debug_log, debug_save
 from utils.images.model import PartInfo, RectF
 from utils.images.filters.filter import Filter
+
+TELEMETRY_DIR = Path(__file__).resolve().parents[3] / '.telemetry'
 
 class Frame:
 	__image: NDArray[np.uint8]
@@ -32,8 +39,14 @@ class Frame:
 		return self.__image
 
 	def apply(self, partInfo: PartInfo) -> NDArray[np.uint8]:
+		isWavePart = partInfo is screen.WAVE_PART
+		timestamp = strftime('%Y%m%d-%H%M%S') if isWavePart else None
 		subimage = self.__subimage(partInfo['area'])
+		if isWavePart:
+			Frame.__logWaveDebug('apply_in', subimage, timestamp)
 		filtered = Frame.__filter(subimage, partInfo['filters'])
+		if isWavePart:
+			Frame.__logWaveDebug('apply_out', filtered, timestamp)
 		return filtered
 
 	def filter(self, filters: list[Filter]) -> NDArray[np.uint8]:
@@ -70,5 +83,46 @@ class Frame:
 
 	@staticmethod
 	def __filter(src: NDArray[np.uint8], filters: list[Filter]) -> NDArray[np.uint8]:
-		dst = reduce(lambda i, f: f.apply(i), filters, src)
-		return dst
+		image = src
+		for idx, filterInstance in enumerate(filters):
+			image = filterInstance.apply(image)
+			if debug_flags.WAVE_DEBUG:
+				valueMin = int(image.min()) if image.size else 0
+				valueMax = int(image.max()) if image.size else 0
+				valueMean = float(image.mean()) if image.size else 0.0
+				if image.size:
+					if image.ndim == 2:
+						nonzero = int(cv.countNonZero(image))
+					else:
+						gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+						nonzero = int(cv.countNonZero(gray))
+				else:
+					nonzero = 0
+				className = filterInstance.__class__.__name__
+				debug_log(f'[DEBUG] filter#{idx} {className}: dtype={image.dtype}, shape={image.shape}, min={valueMin}, max={valueMax}, mean={valueMean}, nonzero={nonzero}')
+				if image.shape[:2] in {(45, 200), (45, 128)}:
+					timestamp = strftime('%Y%m%d-%H%M%S')
+					filename = TELEMETRY_DIR / f'wave_step_{idx:02d}_{className}_{timestamp}.png'
+					debug_save(filename, image)
+		return image
+
+	@staticmethod
+	def __logWaveDebug(label: str, image: NDArray[np.uint8], timestamp: Optional[str]) -> None:
+		if not debug_flags.WAVE_DEBUG:
+			return
+		if timestamp is None:
+			timestamp = strftime('%Y%m%d-%H%M%S')
+		valueMin = int(image.min()) if image.size else 0
+		valueMax = int(image.max()) if image.size else 0
+		valueMean = float(image.mean()) if image.size else 0.0
+		if image.size:
+			if image.ndim == 2:
+				nonzero = int(cv.countNonZero(image))
+			else:
+				gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+				nonzero = int(cv.countNonZero(gray))
+		else:
+			nonzero = 0
+		debug_log(f'[DEBUG] {label} stats: dtype={image.dtype}, shape={image.shape}, min={valueMin}, max={valueMax}, mean={valueMean}, nonzero={nonzero}')
+		filename = TELEMETRY_DIR / f'wave_{label}_{timestamp}.png'
+		debug_save(filename, image)
