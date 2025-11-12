@@ -5,7 +5,7 @@
   "configurations": [
     {
       "name": "ShakeScouter (module)",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "ShakeScouter.shakescout",
       "cwd": "${workspaceFolder}",
