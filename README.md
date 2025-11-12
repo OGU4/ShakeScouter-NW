@@ -1,79 +1,130 @@
-[English](//github.com/mntone/ShakeScouter/blob/main/README-en.md) | 日本語
+[English](//github.com/OGU4/ShakeScouter-NW/blob/main/README-en.md) | 日本語
 
-# ShakeScouter
+# ShakeScouter-NW
 
-ShakeScouterは「サーモンランNEXT WAVE」の映像を解析し、テレメトリーデータを生成するために設計されたPythonプログラムです。このツールは、Nintendo Switchで人気のゲーム「スプラトゥーン3」にあるサーモンランの映像を解析するために設計されています。
+**ShakeScouter-NW** は「サーモンラン NEXT WAVE」の映像を解析し、テレメトリを生成するための **OGU4 派生フォーク**です。  
+Ubuntu 24.04 / micromamba / NVIDIA RTX 3060 (CUDA 12.x) での実運用を前提に、色空間補正・仮想カメラ経由の安定動作・デバッグ性を強化しています。
+
+> 原作: [mntone/ShakeScouter](//github.com/mntone/ShakeScouter)
 
 ## 目次
-
-* [特徴](#特徴)
-* [インストール](#インストール)
-* [使用方法](#使用方法)
-* [貢献について](#貢献について)
-* [ライセンス](#ライセンス)
-* [謝辞](#謝辞)
-* [著者](#著者)
-* [関連プロジェクト](#関連プロジェクト)
+- [特徴](#特徴)
+- [要件](#要件)
+- [インストール](#インストール)
+- [使用例](#使用例)
+  - [A. ROI 単体デバッグ](#a-roi-単体デバッグ)
+  - [B. HDMI キャプチャ入力（推奨: ffmpeg→/dev/video10）](#b-hdmi-キャプチャ入力推奨-ffmpegdevvideo10)
+  - [C. mp4 ファイルを仮想カメラに流して解析](#c-mp4-ファイルを仮想カメラに流して解析)
+- [起動オプション](#起動オプション)
+- [トラブルシュート](#トラブルシュート)
+- [ライセンス・謝辞](#ライセンス謝辞)
 
 ## 特徴
+- **実運用前提の入力系**: ffmpeg + v4l2loopback で `/dev/video0 → /dev/video10` にブリッジし、Rec.709/フルレンジへ補正して「緑化」を防止。
+- **検出安定化**: `WAVE` ロゴの抽出閾値を見直し（InRange: V下限を緩和）テンプレート一致精度を改善。
+- **静粛なデバッグ**: `--wave-debug` でデバッグログ／中間PNGの出力をトグル（デフォルトOFF）。
 
-- **画像解析**: ShakeScouterは高度な画像処理技術を使用して、サーモンランNEXT WAVEの映像を解析します。
-- **テレメトリー生成**: このプログラムは、解析結果に基づいてテレメトリーデータを生成し、ゲームプレイの統計に関する貴重な洞察を提供します。
+## 要件
+- Ubuntu 24.04 LTS
+- NVIDIA GPU（例: RTX 3060）と対応ドライバ
+- ffmpeg, v4l2loopback
+- Python 3.12 / micromamba
 
 ## インストール
 
-1. リポジトリーをクローン: `git clone https://github.com/mntone/ShakeScouter.git`
-2. プロジェクト ディレクトリーに移動: `cd ShakeScouter`
-3. Pythonをインストール
-    - Windows: https://www.microsoft.com/store/productId/9NCVDN91XZQP
-    - macOS: `brew install python@3.12`
-4. 依存関係をインストール: `pip install -r requirements.txt`
-5. PyTorchをインストール: `pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu`
+```bash
+# 1) クローン
+git clone https://github.com/OGU4/ShakeScouter-NW.git
+cd ShakeScouter-NW
 
-将来的に、Windows上でCUDAを使用した解析プログラムを採用する可能性があります。
+# 2) micromamba 環境（例）
+micromamba create -n shakescouter python=3.12 -y
+micromamba activate shakescouter
 
-## 使用方法
+# 3) 依存関係
+pip install -r requirements.txt
 
-```sh
-py shakescout.py [options]
+# 4) PyTorch (CUDA あり/なしのどちらかを選択)
+# CUDA対応（推奨・環境に応じて cuXXX を選択。例は cu124）
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+# CPU版（GPU非使用の場合）
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+````
+
+## 使用例
+
+### A. ROI 単体デバッグ
+
+`src/roi_debug.py` は 1 フレームを取り出して WAVE 抽出パイプを検証します。
+
+```bash
+cd src
+PYTHONPATH=.. python roi_debug.py --device 10           # /dev/video10 を読む
+# またはファイル
+# PYTHONPATH=.. python roi_debug.py --video /path/to/input.mp4
 ```
 
-### オプション
+### B. HDMI キャプチャ入力（推奨: ffmpeg→/dev/video10）
 
-- `--development`: 開発モードで起動します。
-- `-d`, `--device`: PyTorchで使用するデバイスを指定します。選択可能なデバイスは、`auto`、`cpu`、`cuda` です。
-- `-o`, `--outputs`: 出力方式を選択します。選択可能な出力方式は、`console`、`json`、`websocket` です。
-- `-i`, `--input`: OpenCV入力のカメラ入力デバイスIDを指定します。
-- `--width`: OpenCV入力のカメラ入力の幅を指定します。
-- `--hight`: OpenCV入力のカメラ入力の高さを指定します。
-- `-t`, `--timestamp`: JSONファイル名に日時を使用します。
-- `-H`, `--host`: WebSocket接続で使用するホスト名を指定します。
-- `-p`, `--port`: WebSocket接続で使用するポート番号を指定します。
+1. 仮想カメラ作成
 
-## 貢献について
+```bash
+sudo modprobe v4l2loopback devices=1 video_nr=10 card_label="ffmpeg_bridge" exclusive_caps=1
+```
 
-あなたの貢献に感謝します! リポジトリーをフォークして、改善点を含めたプルリクエストを提出してください。
+2. `/dev/video0` → `/dev/video10` へブリッジ（緑化防止・1080p固定）
 
-## ライセンス
+```bash
+ffmpeg -f v4l2 -input_format yuyv422 -video_size 1920x1080 -framerate 60 -i /dev/video0 \
+       -vf "scale=1920:1080:flags=lanczos,colorspace=all=bt709:iall=bt709:fast=1,scale=in_range=limited:out_range=full,format=yuv420p" \
+       -pix_fmt yuv420p -f v4l2 /dev/video10
+```
 
-このプロジェクトは GPLv3 ライセンスの下で認可されています。詳細については [LICENSE](//github.com/mntone/ShakeScouter/blob/main/LICENSE) ファイルを参照してください。
+3. 解析を実行（GPU/CUDA 使用）
 
-## 連絡先
+```bash
+cd src
+PYTHONPATH=.. python shakescout.py -d cuda -i 10 --width 1920 --height 1080 -o console
+```
 
-質問やサポートが必要な場合は、私に連絡してください。
+> 注: `-i` は **カメラのデバイス番号（整数）**。
+> `-d` は **計算デバイス**（auto/cpu/cuda）で、カメラではありません。
 
-- Mastodon: https://mstdn.jp/@mntone
+### C. mp4 ファイルを仮想カメラに流して解析
 
-## 謝辞
+```bash
+ffmpeg -re -i input.mp4 \
+       -vf "scale=1920:1080:flags=lanczos,colorspace=all=bt709:iall=bt709:fast=1,scale=in_range=limited:out_range=full,format=yuv420p" \
+       -pix_fmt yuv420p -f v4l2 /dev/video10
 
-- まず、スプラトゥーン3のクリエイターの方々に心から感謝します。
-- [erudot](https://x.com/erudot)氏に感謝します。彼は私にサーモンランNEXT WAVEをプレイする機会を与えてくれ、でんせつ 999に到達するきっかけとなりました。
-- また、このソフトウェアの開発において、ChatGPTのサポートに心から感謝いたします。
+cd src
+PYTHONPATH=.. python shakescout.py -d cuda -i 10 --width 1920 --height 1080 -o console
+```
 
-## 著者
+## 起動オプション
 
-- mntone - このプロジェクトの作成者
+`py shakescout.py [options]`
 
-## 関連プロジェクト
+* `--development` : 開発モードで起動
+* `-d, --device` : **計算デバイス** (`auto` / `cpu` / `cuda`)
+* `-o, --outputs` : 出力方式 (`console` / `json` / `websocket`)
+* `-i, --input` : **入力カメラのデバイスID**（整数; 例: `10` は `/dev/video10`）
+* `--width`, `--height` : 入力の解像度（1080p前提を推奨）
+* `-t, --timestamp` : JSON ファイル名に日時を付与
+* `-H, --host`, `-p, --port` : WebSocket 用ホスト/ポート
+* `--wave-debug` : 解析中のデバッグログ・中間PNGを有効化（デフォルトOFF）
 
-- [Shake StreamKit](//github.com/mntone/shake-streamkit): サーモンランNEXT WAVEのオーバーレイツール
+## トラブルシュート
+
+* **映像が緑っぽい/白飛び**: 上記 ffmpeg の `colorspace` と `scale=in_range=limited:out_range=full` を必ず適用。
+* **WAVE 検知が出ない**: `constants/screen.py` の `InRange` の V 下限が高すぎないか確認（例: `lower=[0,0,200]`）。
+* **ROI がずれる**: 1080p 以外の解像度で入力していないか確認。
+* **ログがうるさい**: `--wave-debug` を外す。
+
+## ライセンス・謝辞
+
+* ライセンス: GPLv3（原作に準拠）
+* 原作: [mntone/ShakeScouter](//github.com/mntone/ShakeScouter)
+* 本フォークは OGU4 による実運用向け改修を含みます。
+
+最終更新: 2025-11-12 (JST)
