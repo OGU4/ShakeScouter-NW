@@ -17,9 +17,9 @@ from typing import Callable, Optional
 chdir(realpath(join(dirname(__file__), '../ShakeScouter/')))
 path.append('.')
 
-from constants import assets, env, screen
-from utils.images import Frame
-from utils.images.model import PartInfo
+from ShakeScouter.constants import assets, env, screen
+from ShakeScouter.utils.images import Frame
+from ShakeScouter.utils.images.model import PartInfo
 
 @dataclass
 class AssetData:

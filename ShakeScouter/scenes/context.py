@@ -7,7 +7,7 @@ from nanoid import generate
 from time import time
 from typing import Any, Optional
 
-from scenes.base import SceneContext, SceneEvent
+from ShakeScouter.scenes.base import SceneContext, SceneEvent
 
 class SceneContextImpl(SceneContext):
 	EXCLUDE_KEYS = set(['session', 'event', 'timestamp'])

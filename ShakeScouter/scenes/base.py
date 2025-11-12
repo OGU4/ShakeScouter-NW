@@ -9,8 +9,8 @@ from enum import Enum
 from numpy.typing import NDArray
 from typing import Any, Optional
 
-from constants import env
-from utils.images import Frame
+from ShakeScouter.constants import env
+from ShakeScouter.utils.images import Frame
 
 class SceneEvent(Enum):
 	DEV_COMMENT = 'dev_comment'

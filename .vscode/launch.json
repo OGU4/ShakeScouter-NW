@@ -1,53 +1,16 @@
 {
-	// Use IntelliSense to learn about possible attributes.
-	// Hover to view descriptions of existing attributes.
-	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"type": "debugpy",
-			"request": "launch",
-			"name": "Launch (Console & WebSocket) [No Repeat]",
-			"program": "${workspaceFolder}/ShakeScouter/shakescout.py",
-			"console": "integratedTerminal",
-			"cwd": "${fileDirname}",
-			"args": [
-				"--development",
-				"-t"
-			]
-		},
-		{
-			"type": "debugpy",
-			"request": "launch",
-			"name": "Launch (All)",
-			"program": "${workspaceFolder}/ShakeScouter/shakescout.py",
-			"console": "integratedTerminal",
-			"cwd": "${fileDirname}",
-			"args": [
-				"-o",
-				"console",
-				"json",
-				"websocket",
-				"-t",
-				"-H",
-				"${input:hostname}",
-				"-p",
-				"${input:port}"
-			]
-		}
-	],
-	"inputs": [
-		{
-			"id": "hostname",
-			"type": "promptString",
-			"description": "The hostname for the WebSocket connection",
-			"default": "localhost"
-		},
-		{
-			"id": "port",
-			"type": "promptString",
-			"description": "The port number for the WebSocket connection",
-			"default": "4649"
-		}
-	]
+  // ShakeScouter-NW: VSCode 統一実行構成
+  // F5 で "python -m ShakeScouter.shakescout" が実行される
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ShakeScouter (module)",
+      "type": "python",
+      "request": "launch",
+      "module": "ShakeScouter.shakescout",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": []
+    }
+  ]
 }

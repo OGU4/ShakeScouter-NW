@@ -5,7 +5,7 @@ import cv2 as cv
 import numpy as np
 import torch
 
-from constants import env
+from ShakeScouter.constants import env
 
 DIGIT_SIZE = (env.DIGIT_WIDTH, env.DIGIT_HEIGHT)
 

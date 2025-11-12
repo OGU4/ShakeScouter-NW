@@ -12,14 +12,14 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from typing import Optional
 
-from constants import env
+from ShakeScouter.constants import env
 
-from recognizers import selectDevice, Trainer
-from recognizers.digit.cnn import DigitCNN
-from recognizers.digit.dataset import buildDataset
-from recognizers.digit.model import DatasetRoot
+from ShakeScouter.recognizers import selectDevice, Trainer
+from ShakeScouter.recognizers.digit.cnn import DigitCNN
+from ShakeScouter.recognizers.digit.dataset import buildDataset
+from ShakeScouter.recognizers.digit.model import DatasetRoot
 
-from utils import forceCwd
+from ShakeScouter.utils import forceCwd
 
 # Set current working directory.
 forceCwd(__file__)

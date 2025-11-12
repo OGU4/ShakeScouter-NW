@@ -3,7 +3,7 @@
 
 import torch.nn as nn
 
-from constants import env
+from ShakeScouter.constants import env
 
 class DigitCNN(nn.Module):
 	def __init__(self):

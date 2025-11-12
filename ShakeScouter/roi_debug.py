@@ -7,11 +7,11 @@ from typing import Optional
 
 import cv2 as cv
 
-from constants import screen
-from scenes.base import Scene
-from utils import debug_flags
-from utils.debug_io import debug_log, debug_save
-from utils.images import Frame, errorMAE
+from ShakeScouter.constants import screen
+from ShakeScouter.scenes.base import Scene
+from ShakeScouter.utils import debug_flags
+from ShakeScouter.utils.debug_io import debug_log, debug_save
+from ShakeScouter.utils.images import Frame, errorMAE
 
 TELEMETRY_DIR = Path(__file__).resolve().parent.parent / '.telemetry'
 _YUYV_DETECTED: Optional[bool] = None

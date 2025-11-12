@@ -3,10 +3,10 @@
 
 from typing import Any
 
-from constants import screen
-from recognizers.digit import DigitReader
-from scenes.base import *
-from utils.images import errorMAE, Frame
+from ShakeScouter.constants import screen
+from ShakeScouter.recognizers.digit import DigitReader
+from ShakeScouter.scenes.base import *
+from ShakeScouter.utils.images import errorMAE, Frame
 
 class ResultScene(Scene):
 	MIN_ERROR = 0.1

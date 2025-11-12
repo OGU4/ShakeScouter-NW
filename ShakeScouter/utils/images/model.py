@@ -3,7 +3,7 @@
 
 from typing import TypedDict
 
-from utils.images.filters.filter import Filter
+from ShakeScouter.utils.images.filters.filter import Filter
 
 class RectF(TypedDict):
 	left: float

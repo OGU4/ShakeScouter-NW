@@ -8,10 +8,10 @@ import torch
 from functools import reduce
 from typing import Optional
 
-from constants import env
-from recognizers.digit.cnn import DigitCNN
-from recognizers.digit.normalize import normalizeDigitImage
-from utils.images import detectBbox
+from ShakeScouter.constants import env
+from ShakeScouter.recognizers.digit.cnn import DigitCNN
+from ShakeScouter.recognizers.digit.normalize import normalizeDigitImage
+from ShakeScouter.utils.images import detectBbox
 
 class DigitReader:
 	def __init__(self, device: torch.device) -> None:

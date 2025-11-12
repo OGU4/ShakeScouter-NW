@@ -4,7 +4,7 @@
 from parameterized import parameterized
 from unittest import TestCase
 
-from utils.anomaly import CounterAnomalyDetector
+from ShakeScouter.utils.anomaly import CounterAnomalyDetector
 
 class TestCounterAnomalyDetector(TestCase):
 	@parameterized.expand([

@@ -7,12 +7,12 @@ import torch
 from torch.utils.data import Dataset
 from typing import Optional
 
-from constants import env, screen
-from recognizers.digit.model import DatasetAsset, DatasetRoot
-from recognizers.digit.normalize import normalizeDigitImage
+from ShakeScouter.constants import env, screen
+from ShakeScouter.recognizers.digit.model import DatasetAsset, DatasetRoot
+from ShakeScouter.recognizers.digit.normalize import normalizeDigitImage
 
-from utils import calcDigits, getDigit
-from utils.images import detectBbox, Frame
+from ShakeScouter.utils import calcDigits, getDigit
+from ShakeScouter.utils.images import detectBbox, Frame
 
 class DigitDataset(Dataset):
 	def __init__(self, inputs: torch.Tensor, labels: torch.Tensor):

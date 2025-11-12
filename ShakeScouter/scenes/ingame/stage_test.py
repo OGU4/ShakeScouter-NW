@@ -6,11 +6,11 @@ from parameterized import parameterized
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
 
-from constants import assets, env
-from scenes import SceneEvent, SceneStatus
-from scenes.ingame import StageScene
-from scenes.contexttest import TestSceneContext
-from utils.images import Frame
+from ShakeScouter.constants import assets, env
+from ShakeScouter.scenes import SceneEvent, SceneStatus
+from ShakeScouter.scenes.ingame import StageScene
+from ShakeScouter.scenes.contexttest import TestSceneContext
+from ShakeScouter.utils.images import Frame
 
 class TestStageScene(IsolatedAsyncioTestCase):
 	@classmethod

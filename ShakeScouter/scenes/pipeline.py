@@ -1,13 +1,13 @@
 # Copyright (C) 2024 mntone
 # Licensed under the GPLv3 license.
 
-import scenes.utils as su
+import ShakeScouter.scenes.utils as su
 
-from recognizers import selectDevice
-from recognizers.digit import DigitReader
-from scenes import Scene
-from scenes.matchmaking import MatchmakingScene
-from scenes.ingame import *
+from ShakeScouter.recognizers import selectDevice
+from ShakeScouter.recognizers.digit import DigitReader
+from ShakeScouter.scenes import Scene
+from ShakeScouter.scenes.matchmaking import MatchmakingScene
+from ShakeScouter.scenes.ingame import *
 
 def getCorePipeline(dev: str) -> Scene:
 	device = selectDevice(dev)

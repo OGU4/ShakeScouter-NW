@@ -10,13 +10,13 @@ from dotenv import load_dotenv
 from os import getenv
 from typing import Any
 
-from inputs.cv import CVInput
-from outputs import OUTPUT_PLUGINS_KEYLIST, Output
-from scenes import getDefaultPipeline, SceneStatus
-from scenes.context import SceneContextImpl
+from ShakeScouter.inputs.cv import CVInput
+from ShakeScouter.outputs import OUTPUT_PLUGINS_KEYLIST, Output
+from ShakeScouter.scenes import getDefaultPipeline, SceneStatus
+from ShakeScouter.scenes.context import SceneContextImpl
 
-from utils import forceCwd, PluginLoader
-from utils.images import Frame
+from ShakeScouter.utils import forceCwd, PluginLoader
+from ShakeScouter.utils.images import Frame
 
 # Set current working directory.
 forceCwd(__file__)
@@ -24,7 +24,7 @@ forceCwd(__file__)
 async def main(args):
 	targetOutputPlugins = map(lambda o: OUTPUT_PLUGINS_KEYLIST[o], args.outputs)
 
-	outputLoader = PluginLoader('outputs')
+	outputLoader = PluginLoader('ShakeScouter.outputs')
 	outputs: list[Output] = [
 		outputLoader.load(plugin)(args)
 		for plugin in targetOutputPlugins

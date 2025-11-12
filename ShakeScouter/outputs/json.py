@@ -5,9 +5,9 @@ from datetime import datetime
 from json import dump
 from typing import Any
 
-from constants import env
-from outputs.base import Output
-from scenes.base import SceneEvent
+from ShakeScouter.constants import env
+from ShakeScouter.outputs.base import Output
+from ShakeScouter.scenes.base import SceneEvent
 
 class JsonOutput(Output):
 	TIMESTAMP_FILENAME = 'match_%Y%m%d-%H%M'

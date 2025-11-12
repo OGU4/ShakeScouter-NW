@@ -5,8 +5,8 @@ from copy import copy
 from heapq import heapify, heappop
 from typing import Any
 
-from scenes import Scene, SceneContext, SceneStatus
-from utils.images import Frame
+from ShakeScouter.scenes import Scene, SceneContext, SceneStatus
+from ShakeScouter.utils.images import Frame
 
 class PriorityParallel(Scene):
 	def __init__(self, children: list[tuple[int, Scene]]) -> None:

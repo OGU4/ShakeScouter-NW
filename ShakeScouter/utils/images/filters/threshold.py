@@ -4,7 +4,7 @@
 import cv2 as cv
 import numpy as np
 
-from utils.images.filters.filter import Filter
+from ShakeScouter.utils.images.filters.filter import Filter
 
 class Threshold(Filter):
 	__threshold: float

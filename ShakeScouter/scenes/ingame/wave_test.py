@@ -6,13 +6,13 @@ from parameterized import parameterized
 from pathlib import Path
 from unittest import IsolatedAsyncioTestCase
 
-from constants import Color, env
-from recognizers import selectDevice
-from recognizers.digit import DigitReader
-from scenes import SceneEvent, SceneStatus
-from scenes.ingame import WaveScene
-from scenes.contexttest import TestSceneContext
-from utils.images import Frame
+from ShakeScouter.constants import Color, env
+from ShakeScouter.recognizers import selectDevice
+from ShakeScouter.recognizers.digit import DigitReader
+from ShakeScouter.scenes import SceneEvent, SceneStatus
+from ShakeScouter.scenes.ingame import WaveScene
+from ShakeScouter.scenes.contexttest import TestSceneContext
+from ShakeScouter.utils.images import Frame
 
 COLORS = [
 	Color.ORANGE,

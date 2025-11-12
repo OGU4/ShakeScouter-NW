@@ -5,8 +5,8 @@ import numpy as np
 
 from numpy.typing import NDArray
 
-from utils.images.filters import *
-from utils.images.model import PartInfo, RectF
+from ShakeScouter.utils.images.filters import *
+from ShakeScouter.utils.images.model import PartInfo, RectF
 
 # Message in Lobby
 MESSAGE_PART = PartInfo(

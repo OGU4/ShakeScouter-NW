@@ -3,10 +3,10 @@
 
 from unittest import IsolatedAsyncioTestCase
 
-from scenes import SceneStatus
-from scenes.contexttest import TestSceneContext
-from scenes.utils import Parallel
-from scenes.utils.test import *
+from ShakeScouter.scenes import SceneStatus
+from ShakeScouter.scenes.contexttest import TestSceneContext
+from ShakeScouter.scenes.utils import Parallel
+from ShakeScouter.scenes.utils.test import *
 
 class TestParallelScene(IsolatedAsyncioTestCase):
 	@classmethod

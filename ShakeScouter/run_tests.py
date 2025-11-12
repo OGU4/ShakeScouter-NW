@@ -8,7 +8,7 @@ import unittest
 
 from glob import glob
 
-from utils import forceCwd
+from ShakeScouter.utils import forceCwd
 
 # Set current working directory.
 forceCwd(__file__)

@@ -2,7 +2,7 @@ import cv2 as cv
 
 from pathlib import Path
 
-from utils import debug_flags
+from ShakeScouter.utils import debug_flags
 
 
 def debug_log(message: str) -> None:

@@ -3,9 +3,9 @@
 
 from typing import Any
 
-from constants import assets, screen
-from scenes.base import *
-from utils.images import Frame, getMinErrorKey
+from ShakeScouter.constants import assets, screen
+from ShakeScouter.scenes.base import *
+from ShakeScouter.utils.images import Frame, getMinErrorKey
 
 class KingScene(Scene):
 	MIN_ERROR = 0.1

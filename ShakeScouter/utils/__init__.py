@@ -1,6 +1,6 @@
 # Copyright (C) 2024 mntone
 # Licensed under the GPLv3 license.
 
-from .math import *
-from .path import *
-from .plugin import *
+from ShakeScouter.utils.math import *
+from ShakeScouter.utils.path import *
+from ShakeScouter.utils.plugin import *

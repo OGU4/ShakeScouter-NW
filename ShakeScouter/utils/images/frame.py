@@ -10,11 +10,11 @@ from pathlib import Path
 from time import strftime
 from typing import Optional
 
-from constants import screen
-from utils import debug_flags
-from utils.debug_io import debug_log, debug_save
-from utils.images.model import PartInfo, RectF
-from utils.images.filters.filter import Filter
+from ShakeScouter.constants import screen
+from ShakeScouter.utils import debug_flags
+from ShakeScouter.utils.debug_io import debug_log, debug_save
+from ShakeScouter.utils.images.model import PartInfo, RectF
+from ShakeScouter.utils.images.filters.filter import Filter
 
 TELEMETRY_DIR = Path(__file__).resolve().parents[3] / '.telemetry'
 

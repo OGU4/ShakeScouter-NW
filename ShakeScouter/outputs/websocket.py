@@ -8,7 +8,7 @@ from ssl import PROTOCOL_TLS_SERVER, SSLContext
 from typing import Any
 from websockets import broadcast, serve, WebSocketServerProtocol
 
-from outputs.base import Output
+from ShakeScouter.outputs.base import Output
 
 class WebSocketOutput(Output):
 	def __init__(self, args: Any) -> None:

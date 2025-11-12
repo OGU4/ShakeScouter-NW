@@ -3,8 +3,8 @@
 
 from typing import Any
 
-from scenes import Scene, SceneContext, SceneStatus
-from utils.images import Frame
+from ShakeScouter.scenes import Scene, SceneContext, SceneStatus
+from ShakeScouter.utils.images import Frame
 
 class Sequential(Scene):
 	def __init__(self, children: list[Scene]) -> None:

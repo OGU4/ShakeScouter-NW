@@ -7,13 +7,13 @@ import numpy as np
 from numpy.typing import NDArray
 from typing import Any
 
-import utils.images.filters as f
+import ShakeScouter.utils.images.filters as f
 
-from constants import Color, screen
-from recognizers.digit import DigitReader
-from scenes.base import *
-from utils.anomaly import CounterAnomalyDetector
-from utils.images import errorMAE, Frame
+from ShakeScouter.constants import Color, screen
+from ShakeScouter.recognizers.digit import DigitReader
+from ShakeScouter.scenes.base import *
+from ShakeScouter.utils.anomaly import CounterAnomalyDetector
+from ShakeScouter.utils.images import errorMAE, Frame
 
 class WaveScene(Scene):
 	MIN_ERROR = 0.1

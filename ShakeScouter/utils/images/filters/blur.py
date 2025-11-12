@@ -4,7 +4,7 @@
 import cv2 as cv
 import numpy as np
 
-from utils.images.filters.filter import Filter
+from ShakeScouter.utils.images.filters.filter import Filter
 
 class Blur(Filter):
 	__ksize: cv.typing.Size

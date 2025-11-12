@@ -5,7 +5,7 @@ from copy import deepcopy
 from time import time
 from typing import Any, Optional
 
-from scenes.context import SceneContext, SceneEvent
+from ShakeScouter.scenes.context import SceneContext, SceneEvent
 
 class TestSceneContext(SceneContext):
 	def __init__(self) -> None:

@@ -7,8 +7,8 @@ from anyio import sleep
 from logging import getLogger
 from typing import Awaitable, Callable
 
-from inputs.input import Input
-from utils.images import Frame
+from ShakeScouter.inputs.input import Input
+from ShakeScouter.utils.images import Frame
 
 # Set up logger
 logger = getLogger(__name__)
