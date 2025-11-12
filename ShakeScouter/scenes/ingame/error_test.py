@@ -16,7 +16,7 @@ class TestErrorScene(IsolatedAsyncioTestCase):
 	@classmethod
 	def setUpClass(cls):
 		currentDir = Path(__file__)
-		sourceDir  = next(p for p in currentDir.parents if p.name == 'src')
+		sourceDir  = next(p for p in currentDir.parents if p.name == 'ShakeScouter')
 		chdir(sourceDir)
 
 		cls.__ctx   = TestSceneContext()
