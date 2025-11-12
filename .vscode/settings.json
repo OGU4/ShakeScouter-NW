@@ -7,7 +7,7 @@
 			"fileMatch": [
 				"/dataset.json"
 			],
-			"url": "./schemas/dataset.schema.json"
+				"url": "./ShakeScouter/schemas/dataset.schema.json"
 		}
 	],
 	"python.analysis.extraPaths": [

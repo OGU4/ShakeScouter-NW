@@ -8,8 +8,8 @@ import cv2 as cv
 import numpy as np
 
 from dataclasses import dataclass
-from os import chdir, mkdir
-from os.path import dirname, exists, join, realpath
+from os import chdir
+from os.path import dirname, join, realpath
 from sys import path
 from typing import Callable, Optional
 
@@ -30,15 +30,15 @@ class AssetData:
 	fn: Optional[Callable[[np.ndarray], np.ndarray]] = None
 
 	def buildTemplate(self):
-		outputPath = env.TEMPLATE_PATH.format(self.output)
-		if exists(outputPath):
+		outputPath = env.template_path(self.output)
+		if outputPath.exists():
 			print(f'[{self.name}] Mask file exists (path: {outputPath})')
 		else:
 			inputPath = env.DEV_ASSET_PATH.format(self.input)
 			image = Frame(filepath=inputPath).apply(self.part)
 			if self.fn is not None:
 				image = self.fn(image)
-			cv.imwrite(outputPath, image, [cv.IMWRITE_PNG_COMPRESSION, 0])
+			cv.imwrite(str(outputPath), image, [cv.IMWRITE_PNG_COMPRESSION, 0])
 
 
 ASSET_INFO: list[AssetData] = [
@@ -70,19 +70,17 @@ ASSET_INFO: list[AssetData] = [
 ]
 
 def buildStageTemplate():
-	stageTemplateBasePath = env.TEMPLATE_PATH.format('stages/{}')
-	stageTemplateDirPath = dirname(stageTemplateBasePath)
-	if not exists(stageTemplateDirPath):
-		mkdir(stageTemplateDirPath)
+	stageTemplateDirPath = env.TEMPLATE_DIR / 'stages'
+	stageTemplateDirPath.mkdir(parents=True, exist_ok=True)
 
 	for stageKey in assets.stageKeys:
-		outputPath = stageTemplateBasePath.format(stageKey)
-		if exists(outputPath):
+		outputPath = env.template_path(f'stages/{stageKey}')
+		if outputPath.exists():
 			print(f'Stage mask file exists (path: {outputPath})')
 		else:
 			inputPath = env.DEV_ASSET_PATH.format(f'stages/{stageKey}')
 			image = Frame(filepath=inputPath).apply(screen.STAGE_NAME_PART)
-			cv.imwrite(outputPath, image, [cv.IMWRITE_PNG_COMPRESSION, 0])
+			cv.imwrite(str(outputPath), image, [cv.IMWRITE_PNG_COMPRESSION, 0])
 
 def main():
 	for asset in ASSET_INFO:

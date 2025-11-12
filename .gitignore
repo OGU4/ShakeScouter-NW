@@ -7,4 +7,4 @@ __pycache__/
 .dev/
 .telemetry/
 .env
-models/dataset.json
+ShakeScouter/models/dataset.json

@@ -60,8 +60,8 @@ class Scene:
 
 	@staticmethod
 	def loadTemplate(templateName: str) -> NDArray[np.uint8]:
-		filepath = env.TEMPLATE_PATH.format(templateName)
-		image = cv.imread(filepath, cv.IMREAD_GRAYSCALE)
+		filepath = env.template_path(templateName)
+		image = cv.imread(str(filepath), cv.IMREAD_GRAYSCALE)
 		if image is None:
 			raise TypeError(f'Image is not found: {filepath}')
 		if image.dtype != np.uint8:
