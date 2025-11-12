@@ -55,10 +55,10 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 
 ### A. ROI 単体デバッグ
 
-`src/roi_debug.py` は 1 フレームを取り出して WAVE 抽出パイプを検証します。
+`ShakeScouter/roi_debug.py` は 1 フレームを取り出して WAVE 抽出パイプを検証します。
 
 ```bash
-cd src
+cd ShakeScouter
 PYTHONPATH=.. python roi_debug.py --device 10           # /dev/video10 を読む
 # またはファイル
 # PYTHONPATH=.. python roi_debug.py --video /path/to/input.mp4
@@ -83,7 +83,7 @@ ffmpeg -f v4l2 -input_format yuyv422 -video_size 1920x1080 -framerate 60 -i /dev
 3. 解析を実行（GPU/CUDA 使用）
 
 ```bash
-cd src
+cd ShakeScouter
 PYTHONPATH=.. python shakescout.py -d cuda -i 10 --width 1920 --height 1080 -o console
 ```
 
@@ -97,7 +97,7 @@ ffmpeg -re -i input.mp4 \
        -vf "scale=1920:1080:flags=lanczos,colorspace=all=bt709:iall=bt709:fast=1,scale=in_range=limited:out_range=full,format=yuv420p" \
        -pix_fmt yuv420p -f v4l2 /dev/video10
 
-cd src
+cd ShakeScouter
 PYTHONPATH=.. python shakescout.py -d cuda -i 10 --width 1920 --height 1080 -o console
 ```
 
