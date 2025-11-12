@@ -9,3 +9,6 @@ __pycache__/
 !.telemetry/.gitkeep
 .env
 ShakeScouter/models/dataset.json
+
+# VSCode settings (local only)
+.vscode/
