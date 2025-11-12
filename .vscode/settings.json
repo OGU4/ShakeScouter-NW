@@ -11,7 +11,7 @@
 		}
 	],
 	"python.analysis.extraPaths": [
-		"./src"
+		"./ShakeScouter"
 	],
 	"python.analysis.typeCheckingMode": "basic",
 	"python.testing.autoTestDiscoverOnSaveEnabled": true,
@@ -19,12 +19,12 @@
 	"python.testing.unittestArgs": [
 		"-v",
 		"-s",
-		"./src",
+		"./ShakeScouter",
 		"-p",
 		"*_test.py"
 	],
 	"python.testing.unittestEnabled": true,
 	"terminal.integrated.env.windows": {
-		"PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}\\src"
+		"PYTHONPATH": "${env:PYTHONPATH};${workspaceFolder}\\ShakeScouter"
 	}
 }

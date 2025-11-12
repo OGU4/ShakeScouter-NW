@@ -14,7 +14,7 @@ from sys import path
 from typing import Callable, Optional
 
 # Set current working directory.
-chdir(realpath(join(dirname(__file__), '../src/')))
+chdir(realpath(join(dirname(__file__), '../ShakeScouter/')))
 path.append('.')
 
 from constants import assets, env, screen

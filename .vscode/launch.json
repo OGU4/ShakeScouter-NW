@@ -8,7 +8,7 @@
 			"type": "debugpy",
 			"request": "launch",
 			"name": "Launch (Console & WebSocket) [No Repeat]",
-			"program": "${workspaceFolder}/src/shakescout.py",
+			"program": "${workspaceFolder}/ShakeScouter/shakescout.py",
 			"console": "integratedTerminal",
 			"cwd": "${fileDirname}",
 			"args": [
@@ -20,7 +20,7 @@
 			"type": "debugpy",
 			"request": "launch",
 			"name": "Launch (All)",
-			"program": "${workspaceFolder}/src/shakescout.py",
+			"program": "${workspaceFolder}/ShakeScouter/shakescout.py",
 			"console": "integratedTerminal",
 			"cwd": "${fileDirname}",
 			"args": [
