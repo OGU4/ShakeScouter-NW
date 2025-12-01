@@ -16,6 +16,7 @@ class WebSocketOutput(Output):
 		self.__dev  = args.development
 		self.__host = args.host
 		self.__port = args.port
+		self.__sslContext = None
 
 		if args.sslCert is not None and args.sslKey is not None:
 			sslContext = SSLContext(PROTOCOL_TLS_SERVER)
