@@ -3,9 +3,10 @@
 
 import cv2 as cv
 import numpy as np
+import time
 
 from numpy.typing import NDArray
-from typing import Any
+from typing import Any, Optional
 
 import ShakeScouter.utils.images.filters as f
 
@@ -32,6 +33,35 @@ class WaveScene(Scene):
 		self.__waveExTemplate   = Scene.loadTemplate('wave_ex')
 		self.__unstableTemplate = Scene.loadTemplate('unstable')
 		self.__extraWaveCheckId = 0
+		self.__timerDebugId     = 0
+		self.__lastTimerDebug   = None
+		self.__lastTimerImages  = None
+
+	def __captureTimerDebug(self, timestamp: float, count: Optional[int]) -> Optional[dict[str, Any]]:
+		if not debug_flags.WAVE_DEBUG:
+			return None
+		if self.__lastTimerImages is None:
+			return None
+		rawTimerImage, grayImage, timerImage = self.__lastTimerImages
+		self.__timerDebugId += 1
+		debug_id = self.__timerDebugId
+		ts_str = time.strftime('%Y%m%d-%H%M%S', time.localtime(timestamp))
+		raw_path = TELEMETRY_DIR / f'timer_dbg_{ts_str}_{debug_id}_raw.png'
+		gray_path = TELEMETRY_DIR / f'timer_dbg_{ts_str}_{debug_id}_gray.png'
+		th_path = TELEMETRY_DIR / f'timer_dbg_{ts_str}_{debug_id}_th.png'
+		debug_save(raw_path, rawTimerImage)
+		debug_save(gray_path, grayImage)
+		debug_save(th_path, timerImage)
+		debug_log(f'[DEBUG] timer_dbg id={debug_id} ts={timestamp} raw={raw_path} gray={gray_path} th={th_path} count={count}')
+		debug_info = {
+			'id': debug_id,
+			'ts': ts_str,
+			'raw': raw_path,
+			'gray': gray_path,
+			'th': th_path,
+		}
+		self.__lastTimerDebug = debug_info
+		return debug_info
 
 	def setup(self) -> Any:
 		data = {
@@ -56,14 +86,50 @@ class WaveScene(Scene):
 				# Calc estimated end timestamp
 				data['end'] = context.timestamp + (100 - count)
 			else:
+				if debug_flags.WAVE_DEBUG:
+					prev_value = getattr(data['detector'], '_CounterAnomalyDetector__preValue', None)
+					prev_timestamp = getattr(data['detector'], '_CounterAnomalyDetector__preTimestamp', None)
+					elapsed = None
+					if prev_timestamp is not None:
+						elapsed = context.timestamp - prev_timestamp
+					debug_info = self.__lastTimerDebug
+					if debug_info is None:
+						debug_info = self.__captureTimerDebug(context.timestamp, count)
+					debug_id = debug_info['id'] if debug_info else None
+					ts_str = debug_info['ts'] if debug_info else None
+					debug_log(f'[DEBUG] timer_anom id={debug_id} ts={context.timestamp} ts_str={ts_str} prev_val={prev_value} elapsed={elapsed} reason=anomalous')
 				await context.sendImmediately(SceneEvent.DEV_WARN, {
 					'description': f'Anomalous value detected: {count}',
 				})
 
 	def __analysisCount(self, frame: Frame) -> Optional[int]:
 		# Read "count"
-		timerImage = frame.apply(screen.TIMER_PART)
+		rawTimerFrame = frame.subimage(screen.TIMER_PART['area'])
+		rawTimerImage = rawTimerFrame.native
+		filters = screen.TIMER_PART['filters']
+		grayImage = filters[0].apply(rawTimerImage) if len(filters) > 0 else rawTimerImage
+		timerImage = filters[1].apply(grayImage) if len(filters) > 1 else grayImage
 		timerInt = self.__reader.read(timerImage)
+
+		if debug_flags.WAVE_DEBUG:
+			self.__lastTimerImages = (rawTimerImage, grayImage, timerImage)
+			if timerInt is None or timerInt == 200:
+				debug_info = self.__captureTimerDebug(time.time(), timerInt)
+				if debug_info is not None:
+					rect = screen.TIMER_PART['area']
+					full = frame.native
+					height, width = full.shape[:2]
+					x1 = max(0, int(rect['left'] * width))
+					y1 = max(0, int(rect['top'] * height))
+					x2 = min(width, int(rect['right'] * width))
+					y2 = min(height, int(rect['bottom'] * height))
+					annotated = full.copy()
+					cv.rectangle(annotated, (x1, y1), (x2, y2), (0, 0, 255), 2)
+					frame_path = TELEMETRY_DIR / f'timer_dbg_{debug_info["ts"]}_{debug_info["id"]}_frame.png'
+					debug_save(frame_path, annotated)
+					debug_log(f'[DEBUG] timer_dbg_frame id={debug_info["id"]} path={frame_path}')
+			else:
+				self.__lastTimerDebug = None
 
 		return timerInt
 

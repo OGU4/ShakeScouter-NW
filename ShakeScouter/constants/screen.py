@@ -104,7 +104,7 @@ def removeNumberAreaFromWaveImage(waveImage: NDArray[np.uint8]) -> NDArray[np.ui
 # Timer Counter in Game
 TIMER_PART = PartInfo(
 	area = RectF(
-		left   =  90 / 1920,
+		left   =  70 / 1920,
 		top    =  93 / 1080,
 		right  = 190 / 1920,
 		bottom = 153 / 1080,

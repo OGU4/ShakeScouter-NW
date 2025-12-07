@@ -13,7 +13,7 @@ from ShakeScouter.utils import debug_flags
 from ShakeScouter.utils.debug_io import debug_log, debug_save
 from ShakeScouter.utils.images import Frame, errorMAE
 
-TELEMETRY_DIR = Path(__file__).resolve().parent.parent / '.telemetry'
+TELEMETRY_DIR = Path(__file__).resolve().parents[1] / '.telemetry'
 _YUYV_DETECTED: Optional[bool] = None
 THRESHOLD = 0.1  # WaveScene.MIN_ERROR
 

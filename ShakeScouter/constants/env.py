@@ -4,7 +4,7 @@ from pathlib import Path
 # Licensed under the GPLv3 license.
 
 # Environment Values
-TELEMETRY_PATH = '../.telemetry/{}.json'
+TELEMETRY_PATH = str(Path(__file__).resolve().parents[2] / '.telemetry' / '{}.json')
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = PACKAGE_ROOT / 'templates'
