@@ -14,6 +14,9 @@ from ShakeScouter.recognizers.digit import DigitReader
 from ShakeScouter.scenes.base import *
 from ShakeScouter.utils.anomaly import CounterAnomalyDetector
 from ShakeScouter.utils.images import errorMAE, Frame
+from ShakeScouter.utils import debug_flags
+from ShakeScouter.utils.debug_io import debug_log, debug_save
+from ShakeScouter.utils.images.frame import TELEMETRY_DIR
 
 class WaveScene(Scene):
 	MIN_ERROR = 0.1
@@ -28,6 +31,7 @@ class WaveScene(Scene):
 		self.__waveTemplate     = Scene.loadTemplate('wave')
 		self.__waveExTemplate   = Scene.loadTemplate('wave_ex')
 		self.__unstableTemplate = Scene.loadTemplate('unstable')
+		self.__extraWaveCheckId = 0
 
 	def setup(self) -> Any:
 		data = {
@@ -100,9 +104,29 @@ class WaveScene(Scene):
 
 	async def __analysisXtrawave(self, context: SceneContext, data: Any, frame: Frame, waveImage: Optional[NDArray[np.uint8]] = None) -> SceneStatus:
 		if context.timestamp >= data['end']:
+			# Debug bookkeeping for every Extra Wave check
+			debug_id: Optional[int] = None
+			roi_color: Optional[NDArray[np.uint8]] = None
+			if debug_flags.WAVE_DEBUG:
+				self.__extraWaveCheckId += 1
+				debug_id = self.__extraWaveCheckId
+				roi_color = frame.subimage(screen.WAVE_PART['area']).native
+
 			if waveImage is None:
 				waveImage = frame.apply(screen.WAVE_PART)
 			waveExError = errorMAE(waveImage, self.__waveExTemplate)
+
+			if debug_flags.WAVE_DEBUG and debug_id is not None:
+				base = f'extra_check_{debug_id}'
+				roi_color_name = f'{base}_roi_color.png'
+				roi_processed_name = f'{base}_roi_processed.png'
+				template_name = f'{base}_template.png'
+				if roi_color is not None:
+					debug_save(TELEMETRY_DIR / roi_color_name, roi_color)
+				debug_save(TELEMETRY_DIR / roi_processed_name, waveImage)
+				debug_save(TELEMETRY_DIR / template_name, self.__waveExTemplate)
+				below_threshold = waveExError <= WaveScene.MIN_ERROR
+				debug_log(f'[DEBUG] extra_check id={debug_id} mae={waveExError} below_threshold={below_threshold} roi_color={roi_color_name} roi={roi_processed_name} tpl={template_name}')
 
 			if waveExError > WaveScene.MIN_ERROR:
 				return SceneStatus.FALSE
