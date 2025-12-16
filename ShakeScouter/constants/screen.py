@@ -75,7 +75,7 @@ KING_NAME_PART = PartInfo(
 	),
 	filters = [
 		InRange(
-			lower=np.array([235, 235, 235]),
+			lower=np.array([200, 200, 200]),
 			upper=np.array([255, 255, 255]),
 		),
 	],
