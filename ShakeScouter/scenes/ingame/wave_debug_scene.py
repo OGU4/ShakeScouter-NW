@@ -2,15 +2,17 @@
 # Licensed under the GPLv3 license.
 
 import ShakeScouter.utils.images.filters as f
+import time
 
 from typing import Any, Optional
 
 from ShakeScouter.constants import screen
 from ShakeScouter.scenes.base import SceneContext, SceneEvent, SceneStatus
 from ShakeScouter.scenes.ingame.wave import WaveScene
-from ShakeScouter.utils.debug_io import debug_log
+from ShakeScouter.utils.debug_io import debug_log, debug_save
 from ShakeScouter.utils import debug_flags
 from ShakeScouter.utils.images import Frame, errorMAE
+from ShakeScouter.utils.images.frame import TELEMETRY_DIR
 
 
 class DebugWaveScene(WaveScene):
@@ -64,6 +66,10 @@ class DebugWaveScene(WaveScene):
 
 			# Read "wave"
 			waveNumberImage = waveImage[:, self._WaveScene__waveTemplate.shape[1]:]
+			if debug_flags.WAVE_DEBUG:
+				ts_str = time.strftime('%Y%m%d-%H%M%S', time.localtime(context.timestamp))
+				debug_save(TELEMETRY_DIR / f'wave_text_trim72_{ts_str}.png', waveTextImage)
+				debug_save(TELEMETRY_DIR / f'wave_number_roi_{ts_str}.png', waveNumberImage)
 			waveNumberInt = self._WaveScene__reader.read(waveNumberImage)
 			if waveNumberInt is not None:
 				data['wave'] = waveNumberInt
