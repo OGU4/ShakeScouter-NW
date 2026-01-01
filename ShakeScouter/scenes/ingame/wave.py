@@ -24,6 +24,7 @@ class WaveScene(Scene):
 	ALIVE_THRESHOLD = 600
 	GEGG_HUE        = 32
 	GEGG_THRESHOLD  = 354  # the half of π×30²
+	INITIAL_WAVE_MAX_RETRY = 5
 
 	def __init__(self, reader: DigitReader) -> None:
 		self.__reader           = reader
@@ -70,6 +71,8 @@ class WaveScene(Scene):
 			'color': None,
 			'quota': -1,
 			'detector': CounterAnomalyDetector(),
+			'initial_wave_retry_count': 0,
+			'initial_wave_last_ocr': None,
 		}
 		return data
 
@@ -79,6 +82,8 @@ class WaveScene(Scene):
 		data['color'] = None
 		data['quota'] = -1
 		data['detector'].reset()
+		data['initial_wave_retry_count'] = 0
+		data['initial_wave_last_ocr'] = None
 
 	async def __detectAnomalousCount(self, context: SceneContext, data: Any, count: Optional[int]) -> None:
 		if count is not None:
@@ -221,6 +226,8 @@ class WaveScene(Scene):
 		return SceneStatus.CONTINUE
 
 	async def analysis(self, context: SceneContext, data: Any, frame: Frame) -> SceneStatus:
+		initial_wave_forced = False
+
 		# In "Xtrawave"
 		if data['wave'] == 'extra':
 			result = await self.__analysisXtrawave(context, data, frame)
@@ -252,8 +259,24 @@ class WaveScene(Scene):
 			# Read "wave"
 			waveNumberImage = waveImage[:, self.__waveTemplate.shape[1]:]
 			waveNumberInt = self.__reader.read(waveNumberImage)
-			if waveNumberInt is not None:
-				data['wave'] = waveNumberInt
+			initial_wave_retrying = False
+			initial_wave_forced = False
+			data['initial_wave_last_ocr'] = waveNumberInt
+			if data['wave'] == 0:
+				if waveNumberInt == 1:
+					data['wave'] = 1
+					data['initial_wave_retry_count'] = 0
+				else:
+					if data['initial_wave_retry_count'] < WaveScene.INITIAL_WAVE_MAX_RETRY:
+						data['initial_wave_retry_count'] += 1
+						initial_wave_retrying = data['initial_wave_retry_count'] < WaveScene.INITIAL_WAVE_MAX_RETRY
+					if data['initial_wave_retry_count'] >= WaveScene.INITIAL_WAVE_MAX_RETRY:
+						data['wave'] = 1
+						initial_wave_forced = True
+						debug_log(f'[INFO] initial_wave_forced_to_1 retry_count={data["initial_wave_retry_count"]} last_ocr={waveNumberInt} ts={context.timestamp}')
+			else:
+				if waveNumberInt is not None:
+					data['wave'] = waveNumberInt
 
 			# Read "quota"
 			quotaImage = frame.apply(screen.QUOTA_PART)
@@ -273,8 +296,8 @@ class WaveScene(Scene):
 		# Detect anomalous count
 		await self.__detectAnomalousCount(context, data, count)
 
-		# Send message if any of count or amount is not None
-		if any([count, amountInt]):
+		# Send message if any of count or amount is not None, or forced wave1 fallback occurred
+		if (any([count, amountInt]) or initial_wave_forced) and not (data['wave'] == 0 and 'initial_wave_retry_count' in data and data['initial_wave_retry_count'] > 0 and not initial_wave_forced):
 			message = {
 				'color': data['color'].value.name,
 				'wave': data['wave'],

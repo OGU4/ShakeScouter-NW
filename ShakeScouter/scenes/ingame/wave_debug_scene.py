@@ -23,6 +23,7 @@ class DebugWaveScene(WaveScene):
 
 	# Copy of WaveScene.analysis with additional debug logs.
 	async def analysis(self, context: SceneContext, data: Any, frame: Frame) -> SceneStatus:
+		initial_wave_forced = False
 		debug_log(f'[DEBUG] analysis enter: wave={data["wave"]}, ts={context.timestamp}, end={data["end"]}')
 
 		# In "Xtrawave"
@@ -71,8 +72,22 @@ class DebugWaveScene(WaveScene):
 				debug_save(TELEMETRY_DIR / f'wave_text_trim72_{ts_str}.png', waveTextImage)
 				debug_save(TELEMETRY_DIR / f'wave_number_roi_{ts_str}.png', waveNumberImage)
 			waveNumberInt = self._WaveScene__reader.read(waveNumberImage)
-			if waveNumberInt is not None:
-				data['wave'] = waveNumberInt
+			data['initial_wave_last_ocr'] = waveNumberInt
+			if data['wave'] == 0:
+				if waveNumberInt == 1:
+					data['wave'] = 1
+					data['initial_wave_retry_count'] = 0
+				else:
+					if data['initial_wave_retry_count'] < DebugWaveScene.INITIAL_WAVE_MAX_RETRY:
+						data['initial_wave_retry_count'] += 1
+						debug_log(f'[DEBUG] initial_wave_retry retry_count={data["initial_wave_retry_count"]} ocr={waveNumberInt} ts={context.timestamp}')
+					if data['initial_wave_retry_count'] >= DebugWaveScene.INITIAL_WAVE_MAX_RETRY:
+						data['wave'] = 1
+						initial_wave_forced = True
+						debug_log(f'[DEBUG] initial_wave_forced_to_1 retry_count={data["initial_wave_retry_count"]} last_ocr={waveNumberInt} ts={context.timestamp}')
+			else:
+				if waveNumberInt is not None:
+					data['wave'] = waveNumberInt
 
 			# Read "quota"
 			quotaImage = frame.apply(screen.QUOTA_PART)
@@ -94,8 +109,8 @@ class DebugWaveScene(WaveScene):
 		# Detect anomalous count
 		await self._WaveScene__detectAnomalousCount(context, data, count)
 
-		# Send message if any of count or amount is not None
-		if any([count, amountInt]):
+		# Send message if any of count or amount is not None, or forced wave1 fallback occurred
+		if (any([count, amountInt]) or initial_wave_forced) and not (data['wave'] == 0 and 'initial_wave_retry_count' in data and data['initial_wave_retry_count'] > 0 and not initial_wave_forced):
 			message = {
 				'color': data['color'].value.name,
 				'wave': data['wave'],
